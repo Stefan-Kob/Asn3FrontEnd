@@ -4,8 +4,8 @@ const path = require("path");
 const app = express();
 const PORT = 3000;
 
-// RNeed to replace
-const API_BASE = "https://your-springboot-backend.onrender.com";
+// Base API URL
+const API_BASE = "https://cloud-native-assignment-latest.onrender.com";
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
@@ -30,7 +30,22 @@ app.post("/addtocart", async (req, res) => {
 // Render cart page
 app.get("/cart", async (req, res) => {
     const cart = await fetch(`${API_BASE}/cart`).then(r => r.json());
-    res.render("cart.ejs", { cart });
+    const products = await fetch(`${API_BASE}/products`).then(r => r.json());
+
+    // Join cart items with product details
+    const cartWithDetails = cart.map(item => {
+        const product = products.find(p => p.id === item.productId);
+
+        return {
+            ...item,
+            name: product?.name,
+            description: product?.description,
+            price: product?.price,
+            image: product?.image
+        };
+    });
+
+    res.render("cart.ejs", { cart: cartWithDetails });
 });
 
 // Delete from cart
