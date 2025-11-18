@@ -48,6 +48,13 @@ app.get("/cart", async (req, res) => {
     res.render("cart.ejs", { cart: cartWithDetails });
 });
 
+// Empty cart
+app.post("/emptycart", async (req, res) => {
+    await fetch(`${API_BASE}/emptycart`, { method: "DELETE" });
+
+    res.redirect("/cart");
+});
+
 // Delete from cart
 app.post("/remove", async (req, res) => {
     const { id } = req.body;
